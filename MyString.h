@@ -5,8 +5,8 @@
 
 class MyString {
 
-	char*   buff;
-	size_t  size;
+	char*   buff { nullptr };
+	size_t  size { 0 };
 
 public:
 	MyString(const char* = "");
@@ -31,7 +31,7 @@ public:
 	void        resize(size_t);
 	void        clear();
 	void        swap(MyString&);
-	size_t      substr(const char*) const;
+	size_t      substr(const MyString&) const;
 	MyString&   insert(size_t, char);
 	MyString&   insert(size_t, const char*);
 };

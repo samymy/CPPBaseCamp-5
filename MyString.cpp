@@ -5,19 +5,17 @@
 
 MyString::MyString(const char* str) {
 
-	if (str) {
+	if (!str)
+		str = "";
 
-		size = std::strlen(str);
-		buff = new char[size + 1];
-		std::strcpy(buff, str);
-	}
+	size = std::strlen(str);
+	buff = new char[size + 1];
+	std::strcpy(buff, str);
 }
 
 MyString::MyString(const MyString& copy) {
 
-	buff = new char[copy.size + 1];
-	std::strcpy(buff, copy.buff);
-	size = copy.size;
+	*this = copy;
 }
 
 MyString::~MyString() {
@@ -94,9 +92,9 @@ MyString&   MyString::append(const MyString& obj) {
 
 int MyString::compare(const MyString& obj) const {
 
-	size_t  i, j;
+	size_t  i = 0;
+	size_t  j = 0;
 
-	i = j = 0;
 	while (buff[i] && obj.buff[j] && buff[i] == obj.buff[j]) {
 		++i;
 		++j;
@@ -112,22 +110,22 @@ size_t      MyString::length() const {
 
 void        MyString::resize(size_t count) {
 
-	if (count > size) {
+	if (count != size) {
 
 		char*   buff_ptr = buff;
-
 		buff = new char[count + 1];
 
-		std::strcpy(buff, buff_ptr);
-		std::memset(buff + size, '\0', count - size + 1);
+		if (count > size) {
+			std::strcpy(buff, buff_ptr);
+			std::memset(buff + size, '\0', count - size + 1);
+		}
+		else {
+			std::strncpy(buff, buff_ptr, count);
+			buff[count] = '\0';
+		}
+
 		size = count;
-
 		delete[] buff_ptr;
-	}
-	else if (count < size) {
-
-		buff[count] = '\0';
-		*this = { buff };
 	}
 }
 
@@ -143,10 +141,10 @@ void    MyString::swap(MyString& obj) {
 	size = std::exchange(obj.size, size);
 }
 
-size_t MyString::substr(const char* str) const {
+size_t MyString::substr(const MyString& obj) const {
 
 	for (size_t idx = 0; idx < size; ++idx)
-		if (std::strncmp(buff + idx, str, std::strlen(str)) == 0)
+		if (std::strncmp(buff + idx, obj.c_str(), std::strlen(obj.c_str())) == 0)
 			return idx;
 
 	return std::string::npos;
